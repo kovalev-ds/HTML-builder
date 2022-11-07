@@ -17,7 +17,7 @@ const mergeFiles = async (srcDir, output) => {
     (e) => e.isFile() && path.extname(output) === path.extname(e.name)
   );
 
-  for await (const { name } of files) {
+  for (const { name } of files) {
     fs.createReadStream(path.join(srcDir, name)).pipe(wstream);
   }
 };
