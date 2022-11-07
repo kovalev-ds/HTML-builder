@@ -1,22 +1,23 @@
 const fs = require("node:fs/promises");
 const path = require("node:path");
 
-const FOLDER_NAME = "files";
-const FOLDER_COPY = "files-copy";
+const SRC = "files";
+const DIST = "files-copy";
 
-// TODO: create recursive copuing of folder
+const makeCopy = async (from, to) => {
+  await fs.mkdir(to, { recursive: true });
+
+  const entities = await fs.readdir(from, { withFileTypes: true });
+
+  for await (const e of entities) {
+    e.isFile()
+      ? fs.copyFile(path.join(from, e.name), path.join(to, e.name))
+      : makeCopy(path.join(from, e.name), path.join(to, e.name));
+  }
+};
 
 (async function main() {
-  await fs.mkdir(path.join(__dirname, FOLDER_COPY), {
-    recursive: true,
-  });
-
-  const entities = await fs.readdir(path.join(__dirname, FOLDER_NAME));
-
-  for await (const name of entities) {
-    fs.copyFile(
-      path.join(__dirname, FOLDER_NAME, name),
-      path.join(__dirname, FOLDER_COPY, name)
-    );
-  }
+  await makeCopy(path.join(__dirname, SRC), path.join(__dirname, DIST));
 })();
+
+module.exports = { makeCopy };
