@@ -5,6 +5,7 @@ const SRC = "files";
 const DIST = "files-copy";
 
 const makeCopy = async (from, to) => {
+  await fs.rm(to, { recursive: true, force: true });
   await fs.mkdir(to, { recursive: true });
 
   const entities = await fs.readdir(from, { withFileTypes: true });
